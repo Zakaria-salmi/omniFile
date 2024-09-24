@@ -1,5 +1,5 @@
 <template>
-    <header>
+    <header class="w-full">
         <div>
             <img :src="logo" alt="OmniFile Logo" />
         </div>

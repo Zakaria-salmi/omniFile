@@ -6,7 +6,7 @@
 
 <style>
 .container {
-    width: 700px;
+    width: 100%;
     height: 400px;
     background-color: white;
 }
