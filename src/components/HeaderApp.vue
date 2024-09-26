@@ -1,7 +1,7 @@
 <template>
-    <header class="w-full">
-        <div>
-            <img :src="logo" alt="OmniFile Logo" />
+    <header class="w-full h-24 p-4 mb-16 sticky top-0 bg-[#14142b]">
+        <div class="w-full h-full">
+            <img :src="logo" alt="OmniFile Logo" class="h-full" />
         </div>
     </header>
 </template>
