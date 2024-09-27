@@ -13,8 +13,16 @@
             </div>
             <div class="flex items-center">
                 <FormatSelector @updateFormat="updateFormat" />
-                <button
+                <a
+                    v-if="file.downloadUrl"
+                    :href="file.downloadUrl"
+                    download
                     class="text-slate-200 ml-12"
+                >
+                    Download
+                </a>
+                <button
+                    class="text-slate-200 ml-5"
                     @click="$emit('remove', file.id)"
                 >
                     <i class="fa-solid fa-times text-2xl"></i>

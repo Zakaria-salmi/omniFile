@@ -52,9 +52,6 @@
                 @change="handleFileUpload"
             />
         </div>
-        <button @click="convertFiles" :disabled="converting">
-            Convertir les fichiers
-        </button>
     </div>
 </template>
 
@@ -77,7 +74,6 @@ const handleFileUpload = (event) => {
     };
 
     files.value = [...files.value, fileWithId];
-    console.log("Create", files.value);
 };
 
 const removeFile = (index) => {
@@ -96,7 +92,6 @@ const formatedFile = (file) => {
     } else {
         files.value = [...files.value, file];
     }
-    console.log("Update", files.value);
 };
 
 const convertFiles = async () => {
@@ -106,37 +101,34 @@ const convertFiles = async () => {
         const promises = files.value.map(async (file) => {
             const formData = new FormData();
 
-            formData.append("file", file[0]);
+            const fileObj = file[0];
+            formData.append("file", fileObj);
             formData.append("format", file.format);
 
-            const response = await fetch("/api/convert", {
+            const response = await fetch("http://localhost:3000/api/convert", {
                 method: "POST",
                 body: formData,
             });
 
             if (!response.ok) {
                 throw new Error(
-                    `Erreur lors de la conversion du fichier ${file[0].name}: ${response.statusText}`
+                    `Erreur lors de la conversion du fichier ${fileObj.name}: ${response.statusText}`
                 );
             }
 
             const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `converted_${file[0].name
-                .split(".")
-                .slice(0, -1)
-                .join(".")}${file.format}`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+            const downloadUrl = URL.createObjectURL(blob);
+
+            // Ajoute l'URL de téléchargement au fichier
+            file.downloadUrl = downloadUrl;
+
+            console.log(file);
         });
 
         await Promise.all(promises);
         console.log("Tous les fichiers ont été convertis avec succès !");
     } catch (error) {
-        console.error(error);
+        console.error("Une erreur s'est produite : ", error);
     } finally {
         converting.value = false;
     }

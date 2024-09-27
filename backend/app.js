@@ -1,19 +1,46 @@
 const express = require("express");
+const cors = require("cors");
 const multer = require("multer");
 const sharp = require("sharp");
-const mammoth = require("mammoth");
-const ExcelJS = require("exceljs");
-const fs = require("fs");
-const { PDFDocument } = require("pdf-lib");
 
 const app = express();
-const upload = multer({ dest: "uploads/" });
 
-// Default endpoint
-app.get("/", (req, res) => {
-    res.send("File Conversion API");
+// Activer CORS pour toutes les routes
+app.use(cors());
+
+// Configurer multer pour stocker les fichiers en mémoire (buffer)
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+app.post("/api/convert", upload.single("file"), async (req, res) => {
+    const format = req.body.format;
+    const file = req.file;
+
+    if (!file || !format) {
+        return res.status(400).send("Fichier et format requis.");
+    }
+
+    try {
+        // Conversion du fichier en mémoire avec sharp
+        const convertedFile = await sharp(file.buffer)
+            .toFormat(format)
+            .toBuffer();
+
+        // Définir les bons headers pour le fichier converti
+        res.set({
+            "Content-Type": `image/${format}`,
+            "Content-Disposition": `attachment; filename=${file.originalname}.${format}`,
+        });
+
+        // Envoyer le fichier converti en réponse
+        res.send(convertedFile);
+    } catch (err) {
+        console.error("Erreur lors de la conversion du fichier:", err);
+        res.status(500).send("Erreur lors de la conversion du fichier.");
+    }
 });
 
-app.listen(3000, () => {
-    console.log("Server running on port 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Serveur démarré sur le port ${PORT}`);
 });
