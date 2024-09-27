@@ -52,6 +52,9 @@
                 @change="handleFileUpload"
             />
         </div>
+        <button @click="convertFiles" :disabled="converting">
+            Convertir les fichiers
+        </button>
     </div>
 </template>
 
@@ -60,17 +63,21 @@ import { ref } from "vue";
 import File from "./File.vue";
 
 const files = ref([]);
-const formatedFiles = ref([]);
 const converting = ref(false);
 
 const handleFileUpload = (event) => {
     const selectedFile = event.target.files;
+
+    const fileExtension = selectedFile[0].name.split(".").pop().toLowerCase();
+
     const fileWithId = {
         ...selectedFile,
         id: crypto.randomUUID(),
+        format: fileExtension,
     };
 
     files.value = [...files.value, fileWithId];
+    console.log("Create", files.value);
 };
 
 const removeFile = (index) => {
@@ -83,18 +90,56 @@ const triggerFileInput = () => {
 };
 
 const formatedFile = (file) => {
-    // Chercher le fichier correspondant dans formatedFiles par son id
-    const index = formatedFiles.value.findIndex((f) => f.id === file.id);
-
+    const index = files.value.findIndex((f) => f.id === file.id);
     if (index !== -1) {
-        // Si le fichier existe déjà, remplacer l'ancien par le nouveau
-        formatedFiles.value[index] = file;
+        files.value[index] = file;
     } else {
-        // Sinon, ajouter le fichier mis à jour
-        formatedFiles.value = [...formatedFiles.value, file];
+        files.value = [...files.value, file];
     }
+    console.log("Update", files.value);
+};
 
-    console.log(formatedFiles.value);
+const convertFiles = async () => {
+    converting.value = true;
+
+    try {
+        const promises = files.value.map(async (file) => {
+            const formData = new FormData();
+
+            formData.append("file", file[0]);
+            formData.append("format", file.format);
+
+            const response = await fetch("/api/convert", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(
+                    `Erreur lors de la conversion du fichier ${file[0].name}: ${response.statusText}`
+                );
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `converted_${file[0].name
+                .split(".")
+                .slice(0, -1)
+                .join(".")}${file.format}`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        });
+
+        await Promise.all(promises);
+        console.log("Tous les fichiers ont été convertis avec succès !");
+    } catch (error) {
+        console.error(error);
+    } finally {
+        converting.value = false;
+    }
 };
 </script>
 

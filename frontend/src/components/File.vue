@@ -13,7 +13,10 @@
             </div>
             <div class="flex items-center">
                 <FormatSelector @updateFormat="updateFormat" />
-                <button class="text-slate-200 ml-12" @click="$emit('remove')">
+                <button
+                    class="text-slate-200 ml-12"
+                    @click="$emit('remove', file.id)"
+                >
                     <i class="fa-solid fa-times text-2xl"></i>
                 </button>
             </div>

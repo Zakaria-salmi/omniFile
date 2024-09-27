@@ -128,7 +128,7 @@ const filteredDocumentFormats = computed(() => {
 const selectFormat = (format) => {
     selectedFormat.value = format;
     activeModal.value = false;
-    emit("updateFormat", selectedFormat.value);
+    emit("updateFormat", selectedFormat.value.toLowerCase());
 };
 </script>
 
