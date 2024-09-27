@@ -4,20 +4,16 @@
     >
         <div class="flex items-center justify-between w-full">
             <div>
-                <p class="font-bold">
-                    {{ file.name }}
+                <p>
+                    {{ file[0].name }}
                 </p>
-                <span>{{ (file.size / 1024).toFixed(2) }} KB</span>
+                <span class="text-slate-400"
+                    >{{ (file[0].size / 1024).toFixed(2) }} KB</span
+                >
             </div>
             <div class="flex items-center">
-                <span class="font-bold mr-3">To :</span>
-                <select class="bg-slate-600 text-white p-2 rounded">
-                    <option disabled selected>Type</option>
-                    <option value="image">Image Conversion</option>
-                    <option value="audio">Audio Conversion</option>
-                    <option value="video">Video Conversion</option>
-                </select>
-                <button class="text-slate-200 ml-4" @click="$emit('remove')">
+                <FormatSelector @updateFormat="updateFormat" />
+                <button class="text-slate-200 ml-12" @click="$emit('remove')">
                     <i class="fa-solid fa-times text-2xl"></i>
                 </button>
             </div>
@@ -26,9 +22,19 @@
 </template>
 
 <script setup>
+import { computed, ref } from "vue";
+import FormatSelector from "./FormatSelector.vue";
+
 const props = defineProps({
     file: Object,
 });
+
+const emit = defineEmits(["remove", "formatedFile"]);
+
+const updateFormat = (format) => {
+    const updatedFile = { ...props.file, format };
+    emit("formatedFile", updatedFile);
+};
 </script>
 
 <style></style>

@@ -18,7 +18,7 @@
     <div class="w-full mb-10" v-if="files.length > 0">
         <div class="w-full mt-4 flex justify-start">
             <button
-                class="bg-slate-300 text-[#14142b] py-2 px-4"
+                class="bg-slate-300 text-[#14142b] py-2 px-4 font-bold"
                 @click="triggerFileInput"
             >
                 Add a File
@@ -30,15 +30,18 @@
                     v-for="(file, index) in files"
                     :key="index"
                     :file="file"
+                    @formatedFile="formatedFile"
                     @remove="removeFile(index)"
                 />
             </div>
             <div class="flex justify-between items-center font-bold mt-4">
-                <p class="ml-5">{{ files.length }} files</p>
+                <p class="ml-4">{{ files.length }} files</p>
                 <button
                     class="bg-slate-300 h-full p-4 text-[#14142b] rounded-lg"
+                    @click="convertFiles"
+                    :disabled="converting"
                 >
-                    Convert
+                    {{ converting ? "Converting..." : "Convert" }}
                 </button>
             </div>
             <input
@@ -57,19 +60,41 @@ import { ref } from "vue";
 import File from "./File.vue";
 
 const files = ref([]);
+const formatedFiles = ref([]);
+const converting = ref(false);
 
 const handleFileUpload = (event) => {
-    const selectedFiles = event.target.files;
-    files.value = [...files.value, ...selectedFiles];
+    const selectedFile = event.target.files;
+    const fileWithId = {
+        ...selectedFile,
+        id: crypto.randomUUID(),
+    };
+
+    files.value = [...files.value, fileWithId];
 };
 
 const removeFile = (index) => {
-    files.value.splice(index, 1); // Supprime le fichier du tableau
+    files.value.splice(index, 1);
 };
 
 const triggerFileInput = () => {
     const fileInput = document.querySelector('input[type="file"]');
     fileInput.click();
+};
+
+const formatedFile = (file) => {
+    // Chercher le fichier correspondant dans formatedFiles par son id
+    const index = formatedFiles.value.findIndex((f) => f.id === file.id);
+
+    if (index !== -1) {
+        // Si le fichier existe déjà, remplacer l'ancien par le nouveau
+        formatedFiles.value[index] = file;
+    } else {
+        // Sinon, ajouter le fichier mis à jour
+        formatedFiles.value = [...formatedFiles.value, file];
+    }
+
+    console.log(formatedFiles.value);
 };
 </script>
 
