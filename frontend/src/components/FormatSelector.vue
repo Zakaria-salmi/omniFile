@@ -2,11 +2,14 @@
     <div class="flex items-center relative">
         <span class="font-bold mr-3">To :</span>
         <button
-            class="font-semibold p-2 border border-slate-200 rounded-lg flex items-center"
+            class="font-semibold p-2 border border-slate-200 rounded-lg flex items-center transition hover:scale-105"
             @click="toggleModal"
         >
             <span>{{ selectedFormat || "Select Format" }}</span>
-            <i class="fa-solid fa-angle-down ml-6"></i>
+            <i
+                class="fa-solid fa-angle-down ml-6 transition-transform duration-300"
+                :class="{ 'rotate-180': activeModal }"
+            ></i>
         </button>
         <div class="absolute block right-0 top-full z-20" v-if="activeModal">
             <div class="h-auto p-5 bg-slate-200 rounded-lg">
@@ -34,7 +37,7 @@
                         >
                             Image
                         </li>
-                        <li
+                        <!-- <li
                             class="cursor-pointer w-[95px] max-w-[95px] border-b-2"
                             :class="
                                 activeTab === 'documents'
@@ -44,7 +47,7 @@
                             @click="switchTab('documents')"
                         >
                             Document
-                        </li>
+                        </li> -->
                     </ul>
 
                     <div

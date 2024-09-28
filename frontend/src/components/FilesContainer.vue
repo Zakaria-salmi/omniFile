@@ -30,6 +30,7 @@
                     v-for="(file, index) in files"
                     :key="index"
                     :file="file"
+                    :converting="converting"
                     @formatedFile="formatedFile"
                     @remove="removeFile(index)"
                 />
@@ -37,11 +38,35 @@
             <div class="flex justify-between items-center font-bold mt-4">
                 <p class="ml-4">{{ files.length }} files</p>
                 <button
-                    class="bg-slate-300 h-full p-4 text-[#14142b] rounded-lg"
+                    class="border-2 border-slate-300 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:bg-slate-200 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
                     @click="convertFiles"
                     :disabled="converting"
                 >
-                    {{ converting ? "Converting..." : "Convert" }}
+                    <span v-if="converting" class="flex items-center">
+                        <svg
+                            class="animate-spin h-5 w-5 mr-2 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                stroke-width="4"
+                            ></circle>
+                            <path
+                                class="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8z"
+                            ></path>
+                        </svg>
+                        Converting...
+                    </span>
+                    <span v-else>Convert</span>
                 </button>
             </div>
             <input
