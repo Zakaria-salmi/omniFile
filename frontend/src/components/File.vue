@@ -16,7 +16,7 @@
                 <a
                     v-if="file.downloadUrl"
                     :href="file.downloadUrl"
-                    download
+                    :download="file.newFileName"
                     class="text-slate-200 ml-12"
                 >
                     Download

@@ -99,9 +99,17 @@ const convertFiles = async () => {
 
     try {
         const promises = files.value.map(async (file) => {
+            console.log(file);
             const formData = new FormData();
 
-            const fileObj = file[0];
+            const fileObj = file[0]; // Fichier d'origine
+            const originalName = fileObj.name; // Nom d'origine
+            const newExtension = file.format; // Nouveau format (par exemple "png")
+            const newFileName = originalName.replace(
+                /\.[^/.]+$/,
+                `.${newExtension}`
+            );
+
             formData.append("file", fileObj);
             formData.append("format", file.format);
 
@@ -119,10 +127,8 @@ const convertFiles = async () => {
             const blob = await response.blob();
             const downloadUrl = URL.createObjectURL(blob);
 
-            // Ajoute l'URL de téléchargement au fichier
             file.downloadUrl = downloadUrl;
-
-            console.log(file);
+            file.newFileName = newFileName;
         });
 
         await Promise.all(promises);

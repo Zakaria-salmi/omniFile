@@ -12,12 +12,33 @@ app.use(cors());
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+const imageFormats = [
+    "GIF",
+    "AVIF",
+    "JPEG",
+    "JPG",
+    "TILE",
+    "PNG",
+    "RAW",
+    "TIFF",
+    "WEBP",
+];
+
 app.post("/api/convert", upload.single("file"), async (req, res) => {
     const format = req.body.format;
     const file = req.file;
 
+    const oldFormat = file.originalname.split(".").pop().toUpperCase();
+
     if (!file || !format) {
         return res.status(400).send("Fichier et format requis.");
+    }
+
+    if (
+        !imageFormats.includes(format.toUpperCase()) ||
+        !imageFormats.includes(oldFormat.toUpperCase())
+    ) {
+        return res.status(400).send("Format non supporté.");
     }
 
     try {

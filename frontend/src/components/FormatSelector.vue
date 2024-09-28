@@ -87,8 +87,6 @@ const activeTab = ref("images");
 const selectedFormat = ref("PNG");
 
 const imageFormats = [
-    "HEIF",
-    "HEIC",
     "GIF",
     "AVIF",
     "JPEG",
@@ -96,8 +94,6 @@ const imageFormats = [
     "TILE",
     "PNG",
     "RAW",
-    "J2K",
-    "JPX",
     "TIFF",
     "WebP",
 ];
