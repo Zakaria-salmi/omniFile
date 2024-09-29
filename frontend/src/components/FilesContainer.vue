@@ -5,26 +5,29 @@
         v-if="files.length === 0"
     >
         <i class="fa-solid fa-cloud-arrow-up text-6xl mb-4"></i>
-        <p class="font-bold text-2xl">Drop Files Here !</p>
+        <p class="font-bold text-2xl text-center sm:text-lg">
+            Drop Files Here!
+        </p>
         <input
             type="file"
             ref="fileInput"
             class="hidden"
+            :accept="acceptedFormats"
             multiple
             @change="handleFileUpload"
         />
     </div>
 
     <div class="w-full mb-10" v-if="files.length > 0">
-        <div class="w-full mt-4 flex justify-start">
+        <div class="w-full mt-4 flex flex-wrap justify-start space-x-4">
             <button
-                class="bg-slate-300 text-[#14142b] py-2 px-4 font-bold"
+                class="bg-slate-300 text-[#14142b] py-2 px-4 font-bold mb-4 sm:py-1 sm:px-3 rounded"
                 @click="triggerFileInput"
             >
                 Add a File
             </button>
         </div>
-        <div class="w-full border-2 border-slate-300 p-4">
+        <div class="w-full border-2 border-slate-300 p-4 rounded-lg">
             <div class="space-y-4">
                 <File
                     v-for="(file, index) in files"
@@ -35,10 +38,12 @@
                     @remove="removeFile(index)"
                 />
             </div>
-            <div class="flex justify-between items-center font-bold mt-4">
+            <div
+                class="flex flex-wrap justify-between items-center font-bold mt-4 text-sm"
+            >
                 <p class="ml-4">{{ files.length }} files</p>
                 <button
-                    class="border-2 border-slate-300 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:bg-slate-200 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="border-2 border-slate-300 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:bg-slate-200 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed sm:px-3 sm:py-1"
                     @click="convertFiles"
                     :disabled="converting"
                 >
@@ -74,6 +79,7 @@
                 ref="fileInput"
                 class="hidden"
                 multiple
+                :accept="acceptedFormats"
                 @change="handleFileUpload"
             />
         </div>
@@ -87,18 +93,37 @@ import File from "./File.vue";
 const files = ref([]);
 const converting = ref(false);
 
+const imageFormats = [
+    "gif",
+    "avif",
+    "jpeg",
+    "jpg",
+    "tile",
+    "png",
+    "raw",
+    "tiff",
+    "webp",
+];
+
+const acceptedFormats = imageFormats.map((format) => `.${format}`).join(",");
+
 const handleFileUpload = (event) => {
+    console.log(event.target.files);
     const selectedFile = event.target.files;
 
     const fileExtension = selectedFile[0].name.split(".").pop().toLowerCase();
 
-    const fileWithId = {
-        ...selectedFile,
-        id: crypto.randomUUID(),
-        format: fileExtension,
-    };
+    if (imageFormats.includes(fileExtension)) {
+        const fileWithId = {
+            ...selectedFile,
+            id: crypto.randomUUID(),
+            format: fileExtension,
+        };
 
-    files.value = [...files.value, fileWithId];
+        files.value = [...files.value, fileWithId];
+    } else {
+        throw new Error(`Allowed Files: ${acceptedFormats}`);
+    }
 };
 
 const removeFile = (index) => {
@@ -124,12 +149,11 @@ const convertFiles = async () => {
 
     try {
         const promises = files.value.map(async (file) => {
-            console.log(file);
             const formData = new FormData();
 
-            const fileObj = file[0]; // Fichier d'origine
-            const originalName = fileObj.name; // Nom d'origine
-            const newExtension = file.format; // Nouveau format (par exemple "png")
+            const fileObj = file[0];
+            const originalName = fileObj.name;
+            const newExtension = file.format;
             const newFileName = originalName.replace(
                 /\.[^/.]+$/,
                 `.${newExtension}`
@@ -145,7 +169,7 @@ const convertFiles = async () => {
 
             if (!response.ok) {
                 throw new Error(
-                    `Erreur lors de la conversion du fichier ${fileObj.name}: ${response.statusText}`
+                    `Error converting file ${fileObj.name}: ${response.statusText}`
                 );
             }
 
@@ -157,9 +181,8 @@ const convertFiles = async () => {
         });
 
         await Promise.all(promises);
-        console.log("Tous les fichiers ont été convertis avec succès !");
     } catch (error) {
-        console.error("Une erreur s'est produite : ", error);
+        console.error("An error occurred: ", error);
     } finally {
         converting.value = false;
     }
