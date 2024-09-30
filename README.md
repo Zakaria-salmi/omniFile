@@ -7,7 +7,7 @@ Omnifile est une application de conversion de fichiers qui permet aux utilisateu
 - **Conversion d'images** : Convertissez entre plusieurs formats d'image, y compris JPEG, PNG, GIF, et plus encore.
 - **Conversion de documents** : À venir.
 - **Conversion de vidéos** : À venir.
-- **Conversion audio ** : À venir.
+- **Conversion audio** : À venir.
 - **Interface utilisateur conviviale** : Une interface simple pour télécharger des fichiers, choisir des formats et récupérer des fichiers convertis.
 - **Gestion des erreurs** : Notifications claires en cas d'erreurs de conversion.
 
