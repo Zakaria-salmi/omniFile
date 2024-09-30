@@ -2,16 +2,28 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const sharp = require("sharp");
-const fs = require("fs-extra");
-const { PDFDocument, rgb } = require("pdf-lib");
-const { Document, Packer, Paragraph } = require("docx");
-const XLSX = require("xlsx");
-const odt2html = require("odt2html");
-const path = require("path");
+const dotenv = require("dotenv");
+
+// const fs = require("fs-extra");
+// const { PDFDocument, rgb } = require("pdf-lib");
+// const { Document, Packer, Paragraph } = require("docx");
+// const XLSX = require("xlsx");
+// const odt2html = require("odt2html");
+// const path = require("path");
+
+dotenv.config();
 
 const app = express();
 
-app.use(cors());
+const isDevelopment = process.env.STATUS === "development";
+
+console.log(isDevelopment);
+
+app.use(
+    cors({
+        origin: isDevelopment ? "*" : "https://omni-file-frontend.vercel.app/",
+    })
+);
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
