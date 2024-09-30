@@ -42,6 +42,10 @@ const imageFormats = [
 
 const documentFormats = ["PDF", "DOCX", "XLSX", "ODT", "TXT"];
 
+app.post("/", (req, res) => {
+    return res.status(200).send("ok");
+});
+
 app.post("/api/convert/image", upload.single("file"), async (req, res) => {
     const format = req.body.format.toUpperCase();
     const file = req.file;
