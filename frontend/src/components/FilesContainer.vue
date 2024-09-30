@@ -12,7 +12,7 @@
             type="file"
             ref="fileInput"
             class="hidden"
-            :accept="acceptedFormats"
+            :accept="acceptedFormats()"
             multiple
             @change="handleFileUpload"
         />
@@ -79,7 +79,7 @@
                 ref="fileInput"
                 class="hidden"
                 multiple
-                :accept="acceptedFormats"
+                :accept="acceptedFormats()"
                 @change="handleFileUpload"
             />
         </div>
@@ -89,6 +89,8 @@
 <script setup>
 import { ref } from "vue";
 import File from "./File.vue";
+import { Notyf } from "notyf";
+import "notyf/notyf.min.css";
 
 const files = ref([]);
 const converting = ref(false);
@@ -105,24 +107,49 @@ const imageFormats = [
     "webp",
 ];
 
-const acceptedFormats = imageFormats.map((format) => `.${format}`).join(",");
+const documentFormats = ["pdf", "docx", "xlsx", "odt", "txt"];
+
+const notyf = new Notyf({
+    duration: 4000,
+    ripple: true,
+    position: {
+        x: "right",
+        y: "bottom",
+    },
+});
+
+const acceptedFormats = () => {
+    return (
+        imageFormats
+            // .concat(documentFormats)
+            .map((format) => `.${format}`)
+            .join(",")
+    );
+};
 
 const handleFileUpload = (event) => {
-    console.log(event.target.files);
     const selectedFile = event.target.files;
 
     const fileExtension = selectedFile[0].name.split(".").pop().toLowerCase();
 
-    if (imageFormats.includes(fileExtension)) {
-        const fileWithId = {
-            ...selectedFile,
-            id: crypto.randomUUID(),
-            format: fileExtension,
-        };
+    try {
+        if (imageFormats.includes(fileExtension)) {
+            const fileWithId = {
+                ...selectedFile,
+                id: crypto.randomUUID(),
+                format: fileExtension,
+            };
 
-        files.value = [...files.value, fileWithId];
-    } else {
-        throw new Error(`Allowed Files: ${acceptedFormats}`);
+            files.value = [...files.value, fileWithId];
+        } else {
+            throw new Error(`Allowed Files: Images`);
+        }
+    } catch (error) {
+        console.error(error);
+        notyf.error({
+            message: error.message,
+            dismissible: true,
+        });
     }
 };
 
@@ -162,10 +189,24 @@ const convertFiles = async () => {
             formData.append("file", fileObj);
             formData.append("format", file.format);
 
-            const response = await fetch("http://localhost:3000/api/convert", {
-                method: "POST",
-                body: formData,
-            });
+            const oldExtension = originalName.split(".").pop().toLowerCase();
+            let endpoint = "";
+
+            if (imageFormats.includes(oldExtension)) {
+                endpoint = "image";
+                // } else if (documentFormats.includes(oldExtension)) {
+                //     endpoint = "document";
+            } else {
+                throw new Error(`Unsupported file format: ${oldExtension}`);
+            }
+
+            const response = await fetch(
+                `http://localhost:3000/api/convert/${endpoint}`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
 
             if (!response.ok) {
                 throw new Error(
@@ -183,10 +224,19 @@ const convertFiles = async () => {
         await Promise.all(promises);
     } catch (error) {
         console.error("An error occurred: ", error);
+        notyf.error({
+            message: error.message,
+            dismissible: true,
+        });
     } finally {
         converting.value = false;
     }
 };
 </script>
 
-<style></style>
+<style>
+.notyf__toast {
+    font-size: 0.9rem;
+    white-space: normal;
+}
+</style>

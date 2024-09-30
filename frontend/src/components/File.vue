@@ -47,7 +47,7 @@
                         v-if="file.downloadUrl && !converting"
                         :href="file.downloadUrl"
                         :download="file.newFileName"
-                        class="text-slate-200 border-slate-200 border p-2 font-semibold rounded-lg transition-all duration-300 hover:bg-slate-200 hover:text-black hover:scale-105 w-full lg:w-auto text-center"
+                        class="text-slate-200 border-slate-200 border p-2 font-semibold rounded-lg transition-all duration-300 hover:bg-slate-200 hover:text-black lg:hover:scale-105 w-full lg:w-auto text-center"
                     >
                         Download
                     </a>

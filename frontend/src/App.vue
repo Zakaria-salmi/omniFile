@@ -7,7 +7,7 @@ import FilesContainer from "./components/FilesContainer.vue";
 <template>
     <div class="flex flex-col h-full items-center">
         <HeaderApp />
-        <div class="flex flex-auto items-center flex-col w-[90%] lg:w-2/3">
+        <div class="flex flex-auto items-center flex-col w-[90%] lg:w-3/4">
             <Description />
             <FilesContainer />
         </div>

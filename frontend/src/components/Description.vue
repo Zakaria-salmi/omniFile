@@ -7,11 +7,12 @@
             <b class="text-slate-200">OmniFlex</b> – your ultimate online tool
             for unlimited, free multimedia conversion, all handled locally on
             your device to ensure maximum privacy and security. Effortlessly
-            convert images, audio, and videos without any limitations.
-            <span class="text-slate-200"
-                >Start converting today and simplify your content management
-                with OmniFlex !</span
-            >
+            convert images without any limitations. Please note that support for
+            documents, videos, and audio will come in future updates.
+            <span class="text-slate-200">
+                Start converting today and simplify your content management with
+                OmniFlex!
+            </span>
         </p>
     </div>
 </template>
