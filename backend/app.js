@@ -21,7 +21,7 @@ console.log(isDevelopment);
 
 app.use(
     cors({
-        origin: isDevelopment ? "*" : "https://omni-file-frontend.vercel.app/",
+        origin: isDevelopment ? "*" : "https://omni-file-frontend.vercel.app",
     })
 );
 
